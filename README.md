@@ -1,7 +1,12 @@
-# PHP 5.6
-This repository is a fork _supposedly_ maintained for php version 5.6, as `spatie/laravel-activitylog` only support php7+. The rest of the contents here are all identical to `spatie/laravel-activitylog`.
+# Note: This is a fork for PHP 5.6
+As [spatie/laravel-activitylog](https://github.com/spatie/laravel-activitylog) only support php 7 and up, this repository is a fork _supposedly maintained_ for php version 5.6.
 
-It would be great if anyone could lend a hand maintaining this repository to keep up with `spatie`. Thank you.
+The rest of the contents here are all identical to `spatie/laravel-activitylog`.
+
+It would be great if anyone could lend a hand maintaining this repository to keep up with `spatie/laravel-activitylog`.
+Thank you.
+
+---
 
 # Log activity inside your Laravel app
 

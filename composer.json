@@ -1,7 +1,7 @@
 {
-    "name": "justinmoh/laravel-activitylog",
-    "description": "A very simple activity logger to monitor the users of your website or application. Note: This is a fork for php5.6.",
-    "homepage": "https://github.com/justinmoh/activitylog",
+    "name": "justinmoh/laravel-activitylog-php56",
+    "description": "A very simple activity logger to monitor the users of your website or application. (Note: This is a fork for php5.6 and is not regularly maintained.)",
+    "homepage": "https://github.com/justinmoh/laravel-activitylog-php56",
     "keywords":
     [
         "spatie",
