@@ -36,25 +36,40 @@ trait LogsActivity
         });
     }
 
-    public function activity(): MorphMany
+
+    /**
+     * @return MorphMany
+     */
+    public function activity()
     {
         return $this->morphMany(Activity::class, 'subject');
     }
 
-    public function getDescriptionForEvent(string $eventName): string
+
+    /**
+     * @param string $eventName
+     * @return string
+     */
+    public function getDescriptionForEvent($eventName)
     {
         return $eventName;
     }
 
-    public function getLogNameToUse(string $eventName = ''): string
+
+    /**
+     * @param string $eventName
+     * @return string
+     */
+    public function getLogNameToUse($eventName = '')
     {
         return config('laravel-activitylog.default_log_name');
     }
 
-    /*
+    /**
      * Get the event names that should be recorded.
+     * @return Collection
      */
-    protected static function eventsToBeRecorded(): Collection
+    protected static function eventsToBeRecorded()
     {
         if (isset(static::$recordEvents)) {
             return collect(static::$recordEvents);
