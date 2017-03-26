@@ -7,6 +7,24 @@ use Spatie\Activitylog\Test\Models\User;
 use Spatie\Activitylog\Test\Models\Article;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+class ArticleForDetectsChangesTest extends Article {
+    static $logAttributes = ['name', 'text'];
+
+    use LogsActivity;
+};
+
+class ArticleForDetectsChangesTestWithUserName extends Article {
+    static $logAttributes = ['name', 'text', 'user.name'];
+
+    use LogsActivity;
+};
+
+class ArticleForDetectsChangesTestNoLogAttribute extends Article {
+    static $logAttributes = [];
+
+    use LogsActivity;
+};
+
 class DetectsChangesTest extends TestCase
 {
     /** @var \Spatie\Activitylog\Test\Article|\Spatie\Activitylog\Traits\LogsActivity */
@@ -16,11 +34,7 @@ class DetectsChangesTest extends TestCase
     {
         parent::setUp();
 
-        $this->article = new class() extends Article {
-            static $logAttributes = ['name', 'text'];
-
-            use LogsActivity;
-        };
+        $this->article = new ArticleForDetectsChangesTest();
 
         $this->assertCount(0, Activity::all());
     }
@@ -43,11 +57,7 @@ class DetectsChangesTest extends TestCase
     /** @test */
     public function it_can_store_the_relation_values_when_creating_a_model()
     {
-        $articleClass = new class() extends Article {
-            static $logAttributes = ['name', 'text', 'user.name'];
-
-            use LogsActivity;
-        };
+        $articleClass = new ArticleForDetectsChangesTestWithUserName;
 
         $user = User::create([
             'name' => 'user name',
@@ -106,11 +116,7 @@ class DetectsChangesTest extends TestCase
     /** @test */
     public function it_can_store_the_changes_when_updating_a_related_model()
     {
-        $articleClass = new class() extends Article {
-            static $logAttributes = ['name', 'text', 'user.name'];
-
-            use LogsActivity;
-        };
+        $articleClass = new ArticleForDetectsChangesTestWithUserName();
 
         $user = User::create([
             'name' => 'a name',
@@ -147,11 +153,7 @@ class DetectsChangesTest extends TestCase
     /** @test */
     public function it_will_store_no_changes_when_not_logging_attributes()
     {
-        $articleClass = new class() extends Article {
-            static $logAttributes = [];
-
-            use LogsActivity;
-        };
+        $articleClass = new ArticleForDetectsChangesTestNoLogAttribute();
 
         $article = new $articleClass();
 
@@ -179,7 +181,11 @@ class DetectsChangesTest extends TestCase
         $this->assertEquals($expectedChanges, $this->getLastActivity()->changes);
     }
 
-    protected function createArticle(): Article
+
+    /**
+     * @return Article
+     */
+    protected function createArticle()
     {
         $article = new $this->article();
         $article->name = 'my name';

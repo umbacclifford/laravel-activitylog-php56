@@ -23,7 +23,11 @@ trait DetectsChanges
         }
     }
 
-    public function attributesToBeLogged(): array
+
+    /**
+     * @return array
+     */
+    public function attributesToBeLogged()
     {
         if (! isset(static::$logAttributes)) {
             return [];
@@ -32,7 +36,12 @@ trait DetectsChanges
         return static::$logAttributes;
     }
 
-    public function attributeValuesToBeLogged(string $processingEvent): array
+
+    /**
+     * @param string $processingEvent
+     * @return array
+     */
+    public function attributeValuesToBeLogged($processingEvent)
     {
         if (! count($this->attributesToBeLogged())) {
             return [];
@@ -49,7 +58,12 @@ trait DetectsChanges
         return $properties;
     }
 
-    public static function logChanges(Model $model): array
+
+    /**
+     * @param Model $model
+     * @return array
+     */
+    public static function logChanges(Model $model)
     {
         return collect($model->attributesToBeLogged())->mapWithKeys(
             function ($attribute) use ($model) {
@@ -62,7 +76,14 @@ trait DetectsChanges
         )->toArray();
     }
 
-    protected static function getRelatedModelAttributeValue(Model $model, string $attribute): array
+
+    /**
+     * @param Model  $model
+     * @param string $attribute
+     * @return array
+     * @throws CouldNotLogChanges
+     */
+    protected static function getRelatedModelAttributeValue(Model $model, $attribute)
     {
         if (substr_count($attribute, '.') > 1) {
             throw CouldNotLogChanges::invalidAttribute($attribute);
@@ -70,7 +91,9 @@ trait DetectsChanges
 
         list($relatedModelName, $relatedAttribute) = explode('.', $attribute);
 
-        $relatedModel = $model->$relatedModelName ?? $model->$relatedModelName();
+        $relatedModel = isset($model->$relatedModelName)
+            ? $model->$relatedModelName
+            : $model->$relatedModelName();
 
         return ["{$relatedModelName}.{$relatedAttribute}" => $relatedModel->$relatedAttribute];
     }

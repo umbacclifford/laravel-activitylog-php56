@@ -41,7 +41,12 @@ class ActivitylogServiceProvider extends ServiceProvider
         ]);
     }
 
-    public static function determineActivityModel(): string
+
+    /**
+     * @return string
+     * @throws InvalidConfiguration
+     */
+    public static function determineActivityModel()
     {
         $activityModel = config('laravel-activitylog.activity_model') !== null ?
             config('laravel-activitylog.activity_model') :
@@ -54,7 +59,11 @@ class ActivitylogServiceProvider extends ServiceProvider
         return $activityModel;
     }
 
-    public static function getActivityModelInstance(): Model
+
+    /**
+     * @return Model|Activity
+     */
+    public static function getActivityModelInstance()
     {
         $activityModelClassName = self::determineActivityModel();
 

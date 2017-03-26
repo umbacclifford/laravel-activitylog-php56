@@ -12,7 +12,8 @@ class ActivityModelTest extends TestCase
     {
         parent::setUp();
 
-        collect(range(1, 5))->each(function (int $index) {
+        collect(range(1, 5))->each(function ($index) {
+            /** @var int $index */
             $logName = "log{$index}";
             activity($logName)->log('hello everybody');
         });

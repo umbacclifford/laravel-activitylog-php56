@@ -7,6 +7,45 @@ use Spatie\Activitylog\Test\Models\Article;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+class ArticleForLogsActivityTest extends Article {
+    use LogsActivity;
+    use SoftDeletes;
+};
+
+class ArticleForLogsActivityTestNoSoftDelete extends Article {
+    use LogsActivity;
+};
+
+class ArticleForLogsActivityTestWithLogName extends Article {
+    use LogsActivity;
+
+    public function getLogNameToUse()
+    {
+        return 'custom_log';
+    }
+};
+
+class ArticleForLogsActivityTestIgnoredText extends Article {
+    use LogsActivity;
+
+    protected static $ignoreChangedAttributes = ['text'];
+};
+
+class ArticleForLogsActivityTestEmptyAttribute extends Article {
+    use LogsActivity;
+    use SoftDeletes;
+
+
+    /**
+     * @param string $eventName
+     * @return string
+     */
+    public function getDescriptionForEvent($eventName)
+    {
+        return ":causer.name $eventName";
+    }
+};
+
 class LogsActivityTest extends TestCase
 {
     /** @var \Spatie\Activitylog\Test\Article|\Spatie\Activitylog\Traits\LogsActivity */
@@ -16,10 +55,7 @@ class LogsActivityTest extends TestCase
     {
         parent::setUp();
 
-        $this->article = new class() extends Article {
-            use LogsActivity;
-            use SoftDeletes;
-        };
+        $this->article = new ArticleForLogsActivityTest();
 
         $this->assertCount(0, Activity::all());
     }
@@ -53,11 +89,7 @@ class LogsActivityTest extends TestCase
     /** @test */
     public function it_will_log_the_deletion_of_a_model_without_softdeletes()
     {
-        $articleClass = new class() extends Article {
-            use LogsActivity;
-        };
-
-        $article = new $articleClass();
+        $article = new ArticleForLogsActivityTestNoSoftDelete();
 
         $article->save();
 
@@ -136,16 +168,7 @@ class LogsActivityTest extends TestCase
     /** @test */
     public function it_can_log_activity_to_log_named_in_the_model()
     {
-        $articleClass = new class() extends Article {
-            use LogsActivity;
-
-            public function getLogNameToUse()
-            {
-                return 'custom_log';
-            }
-        };
-
-        $article = new $articleClass();
+        $article = new ArticleForLogsActivityTestWithLogName();
         $article->name = 'my name';
         $article->save();
 
@@ -156,11 +179,7 @@ class LogsActivityTest extends TestCase
     /** @test */
     public function it_will_not_log_an_update_of_the_model_if_only_ignored_attributes_are_changed()
     {
-        $articleClass = new class() extends Article {
-            use LogsActivity;
-
-            protected static $ignoreChangedAttributes = ['text'];
-        };
+        $articleClass = new ArticleForLogsActivityTestIgnoredText();
 
         $article = new $articleClass();
         $article->name = 'my name';
@@ -179,17 +198,7 @@ class LogsActivityTest extends TestCase
     /** @test */
     public function it_will_not_fail_if_asked_to_replace_from_empty_attribute()
     {
-        $model = new class() extends Article {
-            use LogsActivity;
-            use SoftDeletes;
-
-            public function getDescriptionForEvent(string $eventName): string
-            {
-                return ":causer.name $eventName";
-            }
-        };
-
-        $entity = new $model();
+        $entity = new ArticleForLogsActivityTestEmptyAttribute();
         $entity->save();
         $entity->name = 'my name';
         $entity->save();
@@ -203,7 +212,11 @@ class LogsActivityTest extends TestCase
         $this->assertEquals(':causer.name updated', $activities[1]->description);
     }
 
-    protected function createArticle(): Article
+
+    /**
+     * @return Article
+     */
+    protected function createArticle()
     {
         $article = new $this->article();
         $article->name = 'my name';

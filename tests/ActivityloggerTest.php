@@ -9,6 +9,11 @@ use Spatie\Activitylog\Test\Models\User;
 use Spatie\Activitylog\Test\Models\Article;
 use Spatie\Activitylog\Exceptions\CouldNotLogActivity;
 
+class ActivityForActivityloggerTest extends Activity
+{
+
+}
+
 class ActivityloggerTest extends TestCase
 {
     /** @var string */
@@ -213,8 +218,7 @@ class ActivityloggerTest extends TestCase
     /** @test */
     public function it_returns_an_instance_of_the_activity_log_after_logging_when_using_a_custom_model()
     {
-        $activityClass = new class extends Activity {
-        };
+        $activityClass = new ActivityForActivityloggerTest();
 
         $activityClassName = get_class($activityClass);
 

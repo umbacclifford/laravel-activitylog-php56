@@ -36,7 +36,9 @@ class ActivityLogger
 
         $this->properties = collect();
 
-        $authDriver = $config['laravel-activitylog']['default_auth_driver'] ?? $auth->getDefaultDriver();
+        $authDriver = isset($config['laravel-activitylog']['default_auth_driver'])
+            ? $config['laravel-activitylog']['default_auth_driver']
+            : $auth->getDefaultDriver();
 
         if (starts_with(app()->version(), '5.1')) {
             $this->causedBy = $auth->driver($authDriver)->user();
@@ -46,7 +48,9 @@ class ActivityLogger
 
         $this->logName = $config['laravel-activitylog']['default_log_name'];
 
-        $this->logEnabled = $config['laravel-activitylog']['enabled'] ?? true;
+        $this->logEnabled = isset($config['laravel-activitylog']['enabled'])
+            ? $config['laravel-activitylog']['enabled']
+            : true;
     }
 
     public function performedOn(Model $model)
@@ -98,21 +102,31 @@ class ActivityLogger
      *
      * @return $this
      */
-    public function withProperty(string $key, $value)
+    public function withProperty($key, $value)
     {
         $this->properties->put($key, $value);
 
         return $this;
     }
 
-    public function useLog(string $logName)
+
+    /**
+     * @param string $logName
+     * @return $this
+     */
+    public function useLog($logName)
     {
         $this->logName = $logName;
 
         return $this;
     }
 
-    public function inLog(string $logName)
+
+    /**
+     * @param string $logName
+     * @return ActivityLogger
+     */
+    public function inLog($logName)
     {
         return $this->useLog($logName);
     }
@@ -122,10 +136,10 @@ class ActivityLogger
      *
      * @return null|mixed
      */
-    public function log(string $description)
+    public function log($description)
     {
         if (! $this->logEnabled) {
-            return;
+            return null;
         }
 
         $activity = ActivitylogServiceProvider::getActivityModelInstance();
@@ -156,7 +170,7 @@ class ActivityLogger
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    protected function normalizeCauser($modelOrId): Model
+    protected function normalizeCauser($modelOrId)
     {
         if ($modelOrId instanceof Model) {
             return $modelOrId;
@@ -169,7 +183,13 @@ class ActivityLogger
         throw CouldNotLogActivity::couldNotDetermineUser($modelOrId);
     }
 
-    protected function replacePlaceholders(string $description, Activity $activity): string
+
+    /**
+     * @param string   $description
+     * @param Activity $activity
+     * @return string
+     */
+    protected function replacePlaceholders($description, Activity $activity)
     {
         return preg_replace_callback('/:[a-z0-9._-]+/i', function ($match) use ($activity) {
             $match = $match[0];
