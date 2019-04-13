@@ -1,6 +1,6 @@
 {
-    "name": "spatie/laravel-activitylog",
-    "description": "A very simple activity logger to monitor the users of your website or application",
+    "name": "umbacclifford/laravel-activitylog",
+    "description": "A very simple activity logger to monitor the users of your multiple database website or sapplication",
     "homepage": "https://github.com/spatie/activitylog",
     "keywords":
     [
